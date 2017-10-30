@@ -2,13 +2,15 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    ofSetBackgroundColor(0);
+    ofSetBackgroundColor(255);
+    ofSetBackgroundAuto(false);
+    ofNoFill();
     ofSetCircleResolution(60);
 
     // initialize global variables
-    totalRays = 100;
-    stepSize = 200;
-    radius = 300;
+    totalRays = 20;
+    stepSize = 50;
+    radius = 100;
     angleStep = 360.0/totalRays;
     sunLocX = ofGetWidth()/2;
     sunLocY = ofGetHeight()/2;
@@ -26,30 +28,49 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     // center all elements
+    if(mouseX != 0 || mouseY != 0)
+    {
+        // follow mouse at slow rate
+        sunLocX += (mouseX - sunLocX)*0.01;
+        sunLocY += (mouseY - sunLocY)*0.01;
+    }
     ofTranslate(sunLocX,sunLocY);
-    ofSetColor(253,202,19);
+    ofSetColor(0,30);
 
     // draw sun rays
     ofBeginShape();
+        ofPoint initPointLocation;
+        float initNoisedRadius = (ofNoise(noiseSeeds[totalRays])* stepSize) + radius;
+        // equally space rays around the center
+        initPointLocation.x = cos(ofDegToRad(angleStep) * totalRays) * initNoisedRadius;
+        initPointLocation.y = sin(ofDegToRad(angleStep) * totalRays) * initNoisedRadius;
+        ofCurveVertex(initPointLocation);
         for (int i=0; i<totalRays; i++)
         {
             ofPoint pointLocation;
             // map mouse position on screen to 0-1 float
-            float amt = ofMap(mouseX, 0, ofGetWidth(), 0, 1, true);
             // sets 'noised' distance from default sun body radius
             float noisedRadius = (ofNoise(noiseSeeds[i])* stepSize) + radius;
             // equally space rays around the center
             pointLocation.x = cos(ofDegToRad(angleStep*i)) * noisedRadius;
             pointLocation.y = sin(ofDegToRad(angleStep*i)) * noisedRadius;
-            pointLocation = pointLocation * amt;
 
-            ofVertex(pointLocation);
+            ofCurveVertex(pointLocation);
             noiseSeeds[i] += 0.01;
         }
+        ofPoint endPointLocation;
+        float endNoisedRadius = (ofNoise(noiseSeeds[0])* stepSize) + radius;
+        // equally space rays around the center
+        endPointLocation.x = cos(ofDegToRad(angleStep)* 0) * endNoisedRadius;
+        endPointLocation.y = sin(ofDegToRad(angleStep) * 0) * endNoisedRadius;
+        ofCurveVertex(endPointLocation);
+        ofPoint controlPointLocation;
+        float controlNoisedRadius = (ofNoise(noiseSeeds[1])* stepSize) + radius;
+        // equally space rays around the center
+        controlPointLocation.x = cos(ofDegToRad(angleStep)) * controlNoisedRadius;
+        controlPointLocation.y = sin(ofDegToRad(angleStep)) * controlNoisedRadius;
+        ofCurveVertex(controlPointLocation);
     ofEndShape();
-    // draw sun body
-    ofSetColor(255,215,13);
-    ofDrawCircle(0,0,300);
 }
 
 //--------------------------------------------------------------
