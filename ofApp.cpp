@@ -40,10 +40,10 @@ void ofApp::draw(){
     // draw sun rays
     ofBeginShape();
         ofPoint initPointLocation;
-        float initNoisedRadius = (ofNoise(noiseSeeds[totalRays])* stepSize) + radius;
+        float initNoisedRadius = (ofNoise(noiseSeeds[totalRays-1])* stepSize) + radius;
         // equally space rays around the center
-        initPointLocation.x = cos(ofDegToRad(angleStep) * totalRays) * initNoisedRadius;
-        initPointLocation.y = sin(ofDegToRad(angleStep) * totalRays) * initNoisedRadius;
+        initPointLocation.x = cos(ofDegToRad(-angleStep)) * initNoisedRadius;
+        initPointLocation.y = sin(ofDegToRad(-angleStep)) * initNoisedRadius;
         ofCurveVertex(initPointLocation);
         for (int i=0; i<totalRays; i++)
         {
